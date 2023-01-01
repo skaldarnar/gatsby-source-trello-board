@@ -18,16 +18,18 @@ In your gatsby-config.js :
     key: `<your Trello key>`,
     token: `<your Trello token>`,
     board_id: `<your Trello Board id>`,
+    include_custom_fields: true | false,
   }
 }
 ```
 
-Dont forget to use [Environment Variables](https://www.gatsbyjs.org/docs/environment-variables/) if you want to keep your key and token private.
+Don't forget to use [Environment Variables](https://www.gatsbyjs.org/docs/environment-variables/) if you want to keep your key and token private.
 
 ## How to query
 
 **Gatsby-source-trello-board** will fetch information of each card of the board :
 
+- **custom_fields**: any custom fields defined on the cards
 - **due**: due date that is set on card
 - **id**: id of the list
 - **index**: card position in the board
@@ -49,6 +51,12 @@ Dont forget to use [Environment Variables](https://www.gatsbyjs.org/docs/environ
     edges {
       node {
         content
+        custom_fields {
+          id
+          value {
+            text
+          }
+        }
         id
         index
         labels

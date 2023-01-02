@@ -3,6 +3,7 @@
 Source plugin for pulling data into [Gatsby](https://www.gatsbyjs.org/) from a [Trello](https://trello.com) board.
 
 ## Install
+
 ```
  npm install --save gatsby-source-trello-board
 ```
@@ -29,7 +30,6 @@ Don't forget to use [Environment Variables](https://www.gatsbyjs.org/docs/enviro
 
 **Gatsby-source-trello-board** will fetch information of each card of the board :
 
-- **custom_fields**: any custom fields defined on the cards
 - **due**: due date that is set on card
 - **id**: id of the list
 - **index**: card position in the board
@@ -51,12 +51,6 @@ Don't forget to use [Environment Variables](https://www.gatsbyjs.org/docs/enviro
     edges {
       node {
         content
-        custom_fields {
-          id
-          value {
-            text
-          }
-        }
         id
         index
         labels
@@ -102,6 +96,25 @@ Card’s attachments are downloaded so [gatsby-image](https://www.gatsbyjs.org/p
         childImageSharp {
           fluid
         }
+      }
+    }
+  }
+}
+```
+
+You can opt-in to fetch _custom fields_ for cards by setting the plugin config value `include_custom_fields: true `.
+See also [Trello API > Cards > Get Custom Field Items for a Card](https://developer.atlassian.com/cloud/trello/rest/api-group-cards/#api-cards-id-customfielditems-get).
+
+- **custom_fields**: array of custom fields defined on the card(s)
+
+```graphql
+{
+  trelloCard(name: { eq: "Name of the card" }) {
+    id
+    custom_fields {
+      id
+      value {
+        text
       }
     }
   }

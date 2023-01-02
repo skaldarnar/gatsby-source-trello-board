@@ -5,8 +5,14 @@ const slugify = require("slugify");
 exports.getTrelloCards = async ({
   key,
   token,
-  board_id
+  board_id,
+  include_custom_fields
 }) => {
+
+  const customFields = include_custom_fields ? "&customFields=true&customFieldItems=true" : "";
+  const attachmentFields = "&attachments=true&attachment_fields=id,url,name,pos";
+  const checklistFields = "&checklists=all&checklist_fields=name,id";
+
   const getData = params => axios.get(`https://api.trello.com/1/${params}&key=${key}&token=${token}`);
 
   const results = [];
@@ -23,7 +29,7 @@ exports.getTrelloCards = async ({
         const {
           data
         } = await getData(
-          `cards/${card.id}?fields=id,name,desc,due,url,labels&checklists=all&checklist_fields=name,id&attachments=true&attachment_fields=id,url,name,pos`
+          `cards/${card.id}?fields=id,name,desc,due,url,labels${checklistFields}${attachmentFields}${customFields}`
         );
         const medias = [];
 
@@ -63,6 +69,7 @@ exports.getTrelloCards = async ({
           url: data.url,
           labels: data.labels,
           checklists: data.checklists,
+          custom_fields: data.customFieldItems
         });
       }));
     }));

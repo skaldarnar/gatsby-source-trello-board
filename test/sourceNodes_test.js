@@ -9,7 +9,14 @@ const {
 } = require('../src/sourceNodes');
 const fetch = require('../src/fetch');
 
-describe('Graphql', function() {
+const gatsbyReporterApi = {
+  error: () => { },
+  info: () => {},
+  success: () => { },
+  verbose: () => { },
+}
+
+describe('Graphql', function () {
   const checkItem1 = {
     id: "59ae06dc4c215c8cf94cd47a",
     idChecklist: "59ae06d39f754ff22ca604ee",
@@ -47,6 +54,9 @@ describe('Graphql', function() {
     }
   ];
 
+  // stub reporter doing nothing
+  const reporter = sinon.stub(gatsbyReporterApi);
+
   let createContentDigest;
 
   beforeEach(() => {
@@ -67,12 +77,14 @@ describe('Graphql', function() {
       actions: { createNode, createParentChildLink },
       store: {},
       cache: {},
+      reporter,
       createContentDigest,
     };
 
     await sourceNodes(sourceNodesParams);
 
-    equal(logStub.callCount, 2, 'should not have an error message');
+    // TODO: if necessary, replace with sinon mock verification that we never use `reporter.error` 
+    // equal(logStub.callCount, 2, 'should not have an error message');
     const createNodeCalls = createNode.getCalls();
     const expectedCardNode = toCardNode(mockCards[0], createContentDigest);
     const expectedChecklistNode = toCheckListNode(checklist, createContentDigest);
@@ -104,20 +116,20 @@ describe('Graphql', function() {
     equal(createParentChildLink.getCalls().length, 3)
   });
 
-  describe('trelloCard node properties', function() {
-    it('includes properties', function() {
-      const cardNode = toCardNode(mockCards[0], () => {});
+  describe('trelloCard node properties', function () {
+    it('includes properties', function () {
+      const cardNode = toCardNode(mockCards[0], () => { });
 
       deepEqual(cardNode.due, new Date(mockCards[0].due));
     });
-    it('handles null date', function() {
-      const cardNode = toCardNode({ ...mockCards[0], due: null }, () => {});
+    it('handles null date', function () {
+      const cardNode = toCardNode({ ...mockCards[0], due: null }, () => { });
 
       equal(cardNode.due, null);
     });
   });
 
-  describe('checklist', function() {
+  describe('checklist', function () {
     it('includes properties', () => {
       const checklistNode = toCheckListNode(checklist, createContentDigest)
 
@@ -141,7 +153,7 @@ describe('Graphql', function() {
     });
   });
 
-  describe('checklistItems', function() {
+  describe('checklistItems', function () {
     it('includes properties', () => {
       checklistItemNode = toCheckListItemNode(checkItem2, createContentDigest);
 

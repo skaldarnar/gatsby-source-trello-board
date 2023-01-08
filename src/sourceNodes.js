@@ -8,15 +8,18 @@ const { normalize } = require("./normalize");
 async function sourceNodes(
   {
     actions: { createNode, touchNode, createParentChildLink },
+    getNode,
     store,
     cache,
     createContentDigest,
-    createNodeId
+    createNodeId,
+    reporter,
   },
   configOptions
 ) {
   const data = await fetch.getTrelloCards(configOptions);
-  console.log(`Fetching from Trello...`);
+  reporter.info(`[gatsby-source-trello-board] Fetching from Trello...`);
+
   let cardCount = 0;
   try {
     await Promise.all(
@@ -52,6 +55,8 @@ async function sourceNodes(
                 createNode,
                 createNodeId,
                 touchNode,
+                getNode,
+                reporter,
                 store,
                 cache,
                 media: {
@@ -85,9 +90,9 @@ async function sourceNodes(
       })
     );
   } catch (error) {
-    console.log(`ERROR while creating nodes : ${error}`);
+    reporter.error(`[gatsby-source-trello-board] ERROR while creating nodes.`, error);
   }
-  console.log(`....................... ${cardCount} cards.`);
+  reporter.success(`[gatsby-source-trello-board] ....................... ${cardCount} cards.`);
 };
 
 function toCardNode(card, createContentDigest) {
